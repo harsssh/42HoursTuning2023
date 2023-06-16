@@ -82,5 +82,5 @@ CREATE TABLE `match_group` (
 CREATE TABLE `match_group_member` (
     `match_group_id` VARCHAR(36) NOT NULL,
     `user_id` VARCHAR(36) NOT NULL,
-    PRIMARY KEY (`match_group_id`, `user_id`)
+    PRIMARY KEY (`user_id`, `match_group_id`)
 );
