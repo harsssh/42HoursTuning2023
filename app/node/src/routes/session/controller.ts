@@ -1,5 +1,4 @@
 import express from "express";
-import { execSync } from "child_process";
 import { v4 as uuidv4 } from "uuid";
 import { getUserIdByMailAndPassword } from "../users/repository";
 import crypto from 'crypto';
