@@ -6,8 +6,19 @@ deploy:
 	@git pull
 	@cd benchmarker && ./migration.sh
 
+.PHONY: deploy-no-migration
+deploy-no-migration:
+	@git pull
+	@cd app && ./restart_container.sh
+
 .PHONY: bench
 bench: deploy
+	@sudo truncate -s 0 ./volume/mysql/log/slow.log
+	@cd benchmarker && ./run_k6_and_score.sh
+	@make log
+
+.PHONY: bench-no-migration
+bench-no-migration: deploy-no-migration
 	@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
 	@make log
@@ -16,8 +27,8 @@ bench: deploy
 test: deploy
 	@cd benchmarker && ./e2e.sh
 
-.PHONY: reset
-reset:
+.PHONY: restore
+restore:
 	@cd benchmarker && ./restore_and_migration.sh
 
 .PHONY: log
