@@ -117,8 +117,8 @@ export const getUsersByUserName = async (
   const userIds: string[] = rows.map((row) => row.user_id);
 
  const [reversedRows] = await pool.query<RowDataPacket[]>(
-    `SELECT user_id FROM user WHERE REVERSE(reversed_user_name) LIKE ?`,
-    [`${userName}%`]
+    `SELECT user_id FROM user WHERE reversed_user_name LIKE ?`,
+    [`${userName.split('').reverse().join('')}%`]
   );
   const reversedUserIds: string[] = reversedRows.map((row) => row.user_id);
 
