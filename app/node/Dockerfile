@@ -12,4 +12,7 @@ COPY --from=builder /node/package* ./
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6 \ 
 yarn install --production --frozen-lockfile
 EXPOSE 8000
+
+ENV NEW_RELIC_NO_CONFIG_FILE=true NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
+
 CMD ["yarn", "start"]
