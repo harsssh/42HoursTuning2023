@@ -11,6 +11,7 @@
     "dev": "nodemon src/index.ts"
   },
   "dependencies": {
+    "@newrelic/native-metrics": "^9.0.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "mysql2": "^3.2.4",
