@@ -8,7 +8,7 @@ deploy:
 
 .PHONY: bench
 bench: deploy
-	@truncate -s 0 ./volume/mysql/log/slow.log
+	@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
 
 .PHONY: test
@@ -21,7 +21,7 @@ reset:
 
 .PHONY: log
 log:
-	@pt-query-digest --limit 10 < $(MYSQL_LOG) > /tmp/pt-query-digest.txt
+	@cat $(MYSQL_LOG) | pt-query-digest --limit 10 > /tmp/pt-query-digest.txt
 	-@curl -X POST -F txt=@/tmp/pt-query-digest.txt $(WEBHOOK_URL) -s -o /dev/null
 
 .PHONY: enter-mysql
