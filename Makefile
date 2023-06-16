@@ -10,6 +10,7 @@ deploy:
 bench: deploy
 	@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
+	@make log
 
 .PHONY: test
 test: deploy
