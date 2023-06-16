@@ -1,1 +1,1 @@
-CREATE INDEX idx_email_password ON user (email,password);
+CREATE INDEX idx_mail_password ON user (mail,password);
