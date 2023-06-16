@@ -15,7 +15,7 @@ CREATE TABLE `user` (
     PRIMARY KEY (`user_id`)
 );
 
-DROP TABLE IF EXISTS `user_icon`;
+DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
     `session_id` VARCHAR(36) NOT NULL,
     `linked_user_id` VARCHAR(36) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `skill_member` (
     PRIMARY KEY (`skill_id`, `user_id`)
 );
 
-DROP TABLE IF EXISTS `skill_group`;
+DROP TABLE IF EXISTS `match_group`;
 CREATE TABLE `match_group` (
     `match_group_id` VARCHAR(36) NOT NULL,
     `match_group_name` VARCHAR(50) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE `match_group` (
     PRIMARY KEY (`match_group_id`)
 );
 
-DROP TABLE IF EXISTS `skill_group_member`;
+DROP TABLE IF EXISTS `match_group_member`;
 CREATE TABLE `match_group_member` (
     `match_group_id` VARCHAR(36) NOT NULL,
     `user_id` VARCHAR(36) NOT NULL,
