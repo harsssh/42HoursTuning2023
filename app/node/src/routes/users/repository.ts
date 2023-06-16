@@ -122,7 +122,7 @@ export const getUsersByUserName = async (
   );
   const reversedUserIds: string[] = reversedRows.map((row) => row.user_id);
 
-  const result = new Map([...userIds, ...reversedUserIds]);
+  const result: string[] = Array.from(new Set([...userIds, ...reversedUserIds]));
 
   return getUsersByUserIds(result);
 };
