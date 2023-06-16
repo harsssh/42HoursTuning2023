@@ -1,5 +1,5 @@
+include .env	# WEBHOOK_URL
 MYSQL_LOG := ./volume/mysql/log/slow.log
-WEBHOOK_URL := https://discord.com/api/webhooks/1119311994512756787/H3D1GV9mWzgJVDJ9DHhPvt7iomAkS0elVKKEEpiGtwv4HwbsSyUKUDUIIfEtVLryw6IY
 
 .PHONY: deploy
 deploy:
