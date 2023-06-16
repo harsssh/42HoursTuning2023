@@ -23,3 +23,7 @@ reset:
 log:
 	@pt-query-digest --limit 10 < $(MYSQL_LOG) > /tmp/pt-query-digest.txt
 	-@curl -X POST -F txt=@/tmp/pt-query-digest.txt $(WEBHOOK_URL) -s -o /dev/null
+
+.PHONY: enter-mysql
+enter-mysql:
+	@mysql -P 33060 -h env-fox -u mysql -p
