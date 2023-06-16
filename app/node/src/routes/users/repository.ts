@@ -112,17 +112,9 @@ export const getUsersByUserName = async (
 ): Promise<SearchedUser[]> => {
   const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT user_id FROM user WHERE user_name LIKE ?`,
-    [`${userName}%`]
+    [`%${userName}%`]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
-
- const [reversedRows] = await pool.query<RowDataPacket[]>(
-    `SELECT user_id FROM user WHERE REVERSE(reversed_user_name) LIKE ?`,
-    [`${userName}%`]
-  );
-  const reversedUserIds: string[] = reversedRows.map((row) => row.user_id);
-
-  const union = new Map([..userIds, ..reversedUserIds])
 
   return getUsersByUserIds(userIds);
 };
