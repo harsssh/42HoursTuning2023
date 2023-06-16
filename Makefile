@@ -21,7 +21,7 @@ reset:
 
 .PHONY: log
 log:
-	@cat $(MYSQL_LOG) | pt-query-digest --limit 10 > /tmp/pt-query-digest.txt
+	@sudo cat $(MYSQL_LOG) | pt-query-digest --limit 10 > /tmp/pt-query-digest.txt
 	-@curl -X POST -F txt=@/tmp/pt-query-digest.txt $(WEBHOOK_URL) -s -o /dev/null
 
 .PHONY: enter-mysql
