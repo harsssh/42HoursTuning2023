@@ -122,9 +122,9 @@ export const getUsersByUserName = async (
   );
   const reversedUserIds: string[] = reversedRows.map((row) => row.user_id);
 
-  const union = new Map([..userIds, ..reversedUserIds])
+  const result = new Map([...userIds, ...reversedUserIds]);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds(result);
 };
 
 export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
