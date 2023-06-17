@@ -1,24 +1,24 @@
 include .env	# WEBHOOK_URL
 MYSQL_LOG := ./volume/mysql/log/slow.log
 
-.PHONY: deploy
-deploy:
+.PHONY: deploy-migration
+deploy-migration:
 	@git pull
 	@cd benchmarker && ./migration.sh
 
-.PHONY: deploy-no-migration
-deploy-no-migration:
+.PHONY: deploy
+deploy:
 	@git pull
 	@cd app && ./restart_container.sh
 
-.PHONY: bench
-bench: deploy
+.PHONY: bench-migration
+bench-migration: deploy-migration
 	@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
 	@make log
 
-.PHONY: bench-no-migration
-bench-no-migration: deploy-no-migration
+.PHONY: bench
+bench: deploy
 	@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
 	@make log
