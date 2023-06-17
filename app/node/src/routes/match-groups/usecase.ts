@@ -36,7 +36,8 @@ export const getAllCandidates = async (
   // Building the base of the SQL query
   let sqlQuery = `SELECT * FROM user 
   JOIN skill_member ON user.user_id = skill_member.user_id
-  JOIN skill ON skill_member.skill_id = skill.skill_id`;
+  JOIN skill ON skill_member.skill_id = skill.skill_id
+  JOIN department_role_member ON department_role_member.user_id = user.user_id`;
 
   // An array to hold the parameters of the SQL query
   let sqlParams = [];
