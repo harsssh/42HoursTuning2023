@@ -147,8 +147,8 @@ usersRouter.get(
       // 重複ユーザーを削除
       const uniqueUsers: SearchedUser[] = Array.from(new Set(duplicateUsers));
 
-     // 入社日・よみがなの昇順でソート
-      duplicateUsers.sort((a, b) => {
+      // 入社日・よみがなの昇順でソート
+      uniqueUsers.sort((a, b) => {
         if (a.entryDate < b.entryDate) return -1;
         if (a.entryDate > b.entryDate) return 1;
         if (a.kana < b.kana) return -1;

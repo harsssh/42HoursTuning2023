@@ -1,7 +1,7 @@
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import { getUserIdByMailAndPassword } from "../users/repository";
-import crypto from 'crypto';
+import crypto from "crypto";
 import {
   getSessionByUserId,
   createSession,
@@ -34,9 +34,9 @@ sessionRouter.post(
 
     const { mail, password }: { mail: string; password: string } = req.body;
 
-	const hash = crypto.createHash('sha256');
-	hash.update(password);
-    const hashPassword = hash.digest('hex');
+    const hash = crypto.createHash("sha256");
+    hash.update(password);
+    const hashPassword = hash.digest("hex");
 
     try {
       const userId = await getUserIdByMailAndPassword(mail, hashPassword);
