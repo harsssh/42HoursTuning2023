@@ -18,6 +18,7 @@ services:
       - .env
     volumes:
       - ../images/user-icon:/node/images/user-icon
+      - ../images/user-icon-resized:/node/images/user-icon-resized
   frontend:
     container_name: frontend
     build:
