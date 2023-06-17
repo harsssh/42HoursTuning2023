@@ -98,42 +98,45 @@ export const getMatchGroupIdsByUserId = async (
 };
 
 export const getMatchGroupsByMatchGroupIds = async (
-    matchGroupIds: string[],
-    status: string
+  matchGroupIds: string[],
+  status: string
 ): Promise<MatchGroup[]> => {
   if (matchGroupIds.length === 0) {
     return [];
   }
 
-  let query =
-      `SELECT match_group_id, match_group_name, description, status, created_by, created_at
+  let query = `SELECT match_group_id, match_group_name, status, created_by, created_at
     FROM match_group WHERE match_group_id IN (?)`;
   if (status === "open") {
     query += " AND status = 'open'";
   }
 
-  const [matchGroupRows] = await pool.query<RowDataPacket[]>(query, [matchGroupIds]);
+  const [matchGroupRows] = await pool.query<RowDataPacket[]>(query, [
+    matchGroupIds,
+  ]);
 
-  // getMatchGroupDetailByMatchGroupId と同じことをやる
   const matchGroups: MatchGroup[] = [];
   for (const matchGroupRow of matchGroupRows) {
     const [matchGroupMemberIdRows] = await pool.query<RowDataPacket[]>(
-        "SELECT user_id FROM match_group_member WHERE match_group_id = ?",
-        [matchGroupRow.match_group_id]
+      "SELECT user_id FROM match_group_member WHERE match_group_id = ?",
+      [matchGroupRow.match_group_id]
     );
     const matchGroupMemberIds: string[] = matchGroupMemberIdRows.map(
-        (row) => row.user_id
+      (row) => row.user_id
     );
 
     const searchedUsers = await getUsersByUserIds(matchGroupMemberIds);
     // SearchedUserからUser型に変換
-    const members: User[] = searchedUsers.map((searchedUser) => {
+    matchGroupRow.members = searchedUsers.map((searchedUser) => {
       const { kana: _kana, entryDate: _entryDate, ...rest } = searchedUser;
       return rest;
     });
-    matchGroupRow.members = members;
 
-    matchGroups.push(convertToMatchGroupDetail(matchGroupRow));
+    // descriptionを除外してMatchGroupオブジェクトを作成
+    const { description: _description, ...matchGroup } =
+      convertToMatchGroupDetail(matchGroupRow);
+
+    matchGroups.push(matchGroup);
   }
 
   return matchGroups;
