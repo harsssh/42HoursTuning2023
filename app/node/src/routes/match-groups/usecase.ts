@@ -29,7 +29,9 @@ export const checkSkillsRegistered = async (
 };
 
 export const getAllCandidates = async (
-  matchGroupConfig: MatchGroupConfig
+  matchGroupConfig: MatchGroupConfig,
+  ownerDepartmentName: string,
+  ownerOfficeName: string
 ): Promise<UserForFilter[]> => {
   const { departmentFilter, officeFilter, skillFilter } = matchGroupConfig;
 
@@ -53,13 +55,13 @@ export const getAllCandidates = async (
     let conditions = [];
 
     if (departmentFilter !== "none") {
-      conditions.push("department_id = ?");
-      sqlParams.push(departmentFilter);
+      conditions.push("department_name = ?");
+      sqlParams.push(ownerDepartmentName);
     }
 
     if (officeFilter !== "none") {
-      conditions.push("office_id = ?");
-      sqlParams.push(officeFilter);
+      conditions.push("office_name = ?");
+      sqlParams.push(ownerOfficeName);
     }
 
     if (skillFilter.length > 0) {
@@ -86,7 +88,7 @@ export const createMatchGroup = async (
   const startTime = Date.now();
 
   // Get all candidates who pass the filter
-  const candidates = await getAllCandidates(matchGroupConfig);
+  const candidates = await getAllCandidates(matchGroupConfig, owner.departmentName, owner.officeName);
 
   // while (members.length < matchGroupConfig.groupCount) {
   while (members.length < matchGroupConfig.numOfMembers) {
