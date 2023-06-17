@@ -11,39 +11,39 @@ import {
 } from "./repository";
 
 export const getUsersByKeyword = async (
-  keyword: string,
-  targets: Target[]
+    keyword: string,
+    targets: Target[]
 ): Promise<SearchedUser[]> => {
-  let users: SearchedUser[] = [];
-  for (const target of targets) {
-    const oldLen = users.length;
+  const promises = targets.map(target => {
     switch (target) {
       case "userName":
-        users = users.concat(await getUsersByUserName(keyword));
-        break;
+        return getUsersByUserName(keyword);
       case "kana":
-        users = users.concat(await getUsersByKana(keyword));
-        break;
+        return getUsersByKana(keyword);
       case "mail":
-        users = users.concat(await getUsersByMail(keyword));
-        break;
+        return getUsersByMail(keyword);
       case "department":
-        users = users.concat(await getUsersByDepartmentName(keyword));
-        break;
+        return getUsersByDepartmentName(keyword);
       case "role":
-        users = users.concat(await getUsersByRoleName(keyword));
-        break;
+        return getUsersByRoleName(keyword);
       case "office":
-        users = users.concat(await getUsersByOfficeName(keyword));
-        break;
+        return getUsersByOfficeName(keyword);
       case "skill":
-        users = users.concat(await getUsersBySkillName(keyword));
-        break;
+        return getUsersBySkillName(keyword);
       case "goal":
-        users = users.concat(await getUsersByGoal(keyword));
-        break;
+        return getUsersByGoal(keyword);
+      default:
+        return Promise.resolve([]);
     }
-    console.log(`${users.length - oldLen} users found by ${target}`);
-  }
+  });
+
+  const usersArray = await Promise.all(promises);
+
+  const users = ([] as SearchedUser[]).concat(...usersArray);
+
+  targets.forEach((target, i) => {
+    console.log(`${usersArray[i].length} users found by ${target}`);
+  });
+
   return users;
 };
