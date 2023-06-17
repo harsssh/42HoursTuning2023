@@ -5,8 +5,6 @@
 # 途中でdockerコンテナの再起動も行う。
 # ==================================
 
-(cd ../app && docker compose down --volumes)
-
 (cd ../app && bash restart_container.sh)
 if [ $? -ne 0 ]; then
     echo "abort"

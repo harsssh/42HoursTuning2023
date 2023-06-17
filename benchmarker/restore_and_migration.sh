@@ -10,7 +10,7 @@
 # リストア・マイグレーション開始
 echo "MySQLのリストアを開始します。"
 
-rm -rf ../volume/mysql
+sudo rm -rf ../volume/mysql
 (cd ../volume && cp ../.da/backup_mysql.zip . && unzip backup_mysql.zip && rm -f backup_mysql.zip)
 
 (cd ../app && bash restart_container.sh)
