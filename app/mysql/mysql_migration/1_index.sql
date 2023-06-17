@@ -13,6 +13,9 @@ CREATE INDEX idx_user_id_match_group_id ON `match_group_member` (`user_id`, `mat
 CALL DropIndexIfExists('department_role_member', 'idx_user_id');
 CREATE INDEX idx_user_id ON `department_role_member` (`user_id`);
 
+CALL DropIndexIfExists('department_role_member', 'idx_role_id');
+CREATE INDEX idx_role_id ON `department_role_member` (`role_id`);
+
 CALL DropIndexIfExists('user', 'idx_ngram_user_name');
 ALTER TABLE `user` ADD FULLTEXT INDEX idx_ngram_user_name (`user_name`) WITH PARSER ngram;
 
