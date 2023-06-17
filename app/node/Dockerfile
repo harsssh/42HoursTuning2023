@@ -1,8 +1,10 @@
 FROM node:20.0.0 AS builder
 WORKDIR /node
-COPY . .
+COPY package*.json ./
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6 \
-yarn install --frozen-lockfile && yarn build
+yarn install --frozen-lockfile
+COPY . .
+RUN yarn build
 
 FROM node:20.0.0 AS runner
 WORKDIR /node
