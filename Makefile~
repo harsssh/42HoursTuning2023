@@ -38,5 +38,4 @@ log:
 
 .PHONY: enter-mysql
 enter-mysql:
-	@mysql -P 33060 -h 127.0.0.1 -u mysql -p
-# @mysql -P 33060 -h env-fox -u mysql -p
+	@mysql -P 33060 -h env-fox -u mysql -p
