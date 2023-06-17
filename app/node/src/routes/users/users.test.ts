@@ -54,7 +54,6 @@ describe("GET /api/v1/users/user-icon/{userIconId}", () => {
     mockExecSync.mockReturnValue(mockBuffer);
 
     const res = await request(app).get(`/api/v1/users/user-icon/${userIconId}`);
-
     expect(res.status).toBe(200);
     expect(res.body).toStrictEqual(mockFile);
     expect(mockGetFileByFileId).toHaveBeenCalledWith(userIconId);
