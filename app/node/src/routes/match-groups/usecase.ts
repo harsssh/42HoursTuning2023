@@ -1,6 +1,6 @@
-import { RowDataPacket } from 'mysql2/promise'; //
-import pool from '../../util/mysql'; //
-import { convertToUserForFilter } from '../../model/utils'; //
+import { RowDataPacket } from "mysql2/promise"; //
+import pool from "../../util/mysql"; //
+import { convertToUserForFilter } from "../../model/utils"; //
 
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -43,7 +43,11 @@ export const getAllCandidates = async (
 
   // 範囲を制限したい
   // Adding the filters to the SQL query
-  if (departmentFilter !== "none" || officeFilter !== "none" || skillFilter.length > 0) {
+  if (
+    departmentFilter !== "none" ||
+    officeFilter !== "none" ||
+    skillFilter.length > 0
+  ) {
     sqlQuery += " WHERE ";
     let conditions = [];
 
@@ -51,12 +55,12 @@ export const getAllCandidates = async (
       conditions.push("department_id = ?");
       sqlParams.push(departmentFilter);
     }
-    
+
     if (officeFilter !== "none") {
       conditions.push("office_id = ?");
       sqlParams.push(officeFilter);
     }
-    
+
     if (skillFilter.length > 0) {
       // This assumes that the skillFilter is an array of skill IDs
       conditions.push(`skill_name IN (?)`);
@@ -84,22 +88,21 @@ export const createMatchGroup = async (
   const candidates = await getAllCandidates(matchGroupConfig);
 
   // while (members.length < matchGroupConfig.groupCount) {
-    while (members.length < matchGroupConfig.numOfMembers) 
-    {
-      // Check for timeout
-      if (timeout && Date.now() - startTime > timeout) {
-        return undefined;
-      }
+  while (members.length < matchGroupConfig.numOfMembers) {
+    // Check for timeout
+    if (timeout && Date.now() - startTime > timeout) {
+      return undefined;
+    }
 
-      // Get a random candidate
-      const candidateIndex = Math.floor(Math.random() * candidates.length);
-      const candidate = candidates[candidateIndex];
+    // Get a random candidate
+    const candidateIndex = Math.floor(Math.random() * candidates.length);
+    const candidate = candidates[candidateIndex];
 
-      // Add candidate to group members
-      members.push(candidate);
+    // Add candidate to group members
+    members.push(candidate);
 
-      // Remove candidate from the candidates list
-      candidates.splice(candidateIndex, 1);
+    // Remove candidate from the candidates list
+    candidates.splice(candidateIndex, 1);
   }
 
   const matchGroupId = uuidv4();

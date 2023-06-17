@@ -11,10 +11,10 @@ import {
 } from "./repository";
 
 export const getUsersByKeyword = async (
-    keyword: string,
-    targets: Target[]
+  keyword: string,
+  targets: Target[]
 ): Promise<SearchedUser[]> => {
-  const promises = targets.map(target => {
+  const promises = targets.map((target) => {
     switch (target) {
       case "userName":
         return getUsersByUserName(keyword);
