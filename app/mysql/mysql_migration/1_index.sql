@@ -6,10 +6,10 @@ CREATE INDEX idx_linked_user_id ON session (`linked_user_id`);
 
 ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_user_name (user_name) WITH PARSER ngram;
 
-ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_kana (kana) WITH PARSER kana;
+ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_kana (kana) WITH PARSER ngram;
 
-ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_mail (mail) WITH PARSER mail;
+ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_mail (mail) WITH PARSER ngram;
 
-ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_departmentName (departmentName) WITH PARSER departmentName;
+ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_department_name (department_name) WITH PARSER ngram;
 
-ALTER TABLE user ADD FULLTEXT INDEX idx_ngram_department_id (department_id) WITH PARSER department_id;
+ALTER TABLE user ADD INDEX idx_ngram_department_id (department_id) WITH PARSER ngram;
