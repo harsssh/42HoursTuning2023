@@ -144,7 +144,10 @@ usersRouter.get(
         return;
       }
 
-      // 入社日・よみがなの昇順でソート
+      // 重複ユーザーを削除
+      const uniqueUsers: SearchedUser[] = Array.from(new Set(duplicateUsers));
+
+     // 入社日・よみがなの昇順でソート
       duplicateUsers.sort((a, b) => {
         if (a.entryDate < b.entryDate) return -1;
         if (a.entryDate > b.entryDate) return 1;
@@ -153,6 +156,7 @@ usersRouter.get(
         return 0;
       });
 
+<<<<<<< HEAD
       // 重複ユーザーを削除
       let uniqueUsers: SearchedUser[] = [];
       duplicateUsers.forEach((user) => {
@@ -171,6 +175,8 @@ usersRouter.get(
         return 0;
       });
 
+=======
+>>>>>>> c15b14468af800360afb14c49d5ab24499c29ea6
       // User型に変換
       const users: User[] = uniqueUsers
         .slice(offset, offset + limit)
