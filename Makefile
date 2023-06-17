@@ -13,15 +13,15 @@ deploy:
 
 .PHONY: bench-migration
 bench-migration: deploy-migration
-	@sudo truncate -s 0 ./volume/mysql/log/slow.log
+	#@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
-	@make log
+	#@make log
 
 .PHONY: bench
 bench: deploy
-	@sudo truncate -s 0 ./volume/mysql/log/slow.log
+	#@sudo truncate -s 0 ./volume/mysql/log/slow.log
 	@cd benchmarker && ./run_k6_and_score.sh
-	@make log
+	#@make log
 
 .PHONY: test
 test: deploy
