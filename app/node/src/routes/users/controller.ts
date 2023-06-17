@@ -163,6 +163,14 @@ usersRouter.get(
         }
       });
 
+      uniqueUsers.sort((a, b) => {
+        if (a.entryDate < b.entryDate) return -1;
+        if (a.entryDate > b.entryDate) return 1;
+        if (a.kana < b.kana) return -1;
+        if (a.kana > b.kana) return 1;
+        return 0;
+      });
+
       // User型に変換
       const users: User[] = uniqueUsers
         .slice(offset, offset + limit)
