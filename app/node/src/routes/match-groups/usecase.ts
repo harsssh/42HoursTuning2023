@@ -19,12 +19,14 @@ import { getUserForFilter } from "../users/repository";
 export const checkSkillsRegistered = async (
   skillNames: string[]
 ): Promise<string | undefined> => {
-  for (const skillName of skillNames) {
-    if (!(await hasSkillNameRecord(skillName))) {
-      return skillName;
+  const checkPromises = skillNames.map((skillName) => hasSkillNameRecord(skillName));
+  const results = await Promise.all(checkPromises);
+
+  for (let i = 0; i < results.length; i++) {
+    if (!results[i]) {
+      return skillNames[i];
     }
   }
-
   return;
 };
 
