@@ -7,8 +7,8 @@ CREATE INDEX idx_entry_date_kana ON `user` (`entry_date`, `kana`);
 CALL DropIndexIfExists('session', 'idx_linked_user_id');
 CREATE INDEX idx_linked_user_id ON `session` (`linked_user_id`);
 
-ALTER TABLE `match_group_member` DROP PRIMARY KEY;
-ALTER TABLE `match_group_member` ADD PRIMARY KEY (`user_id`, `match_group_id`);
+CALL DropIndexIfExists('match_group_member', 'idx_user_id_match_group_id');
+CREATE INDEX idx_user_id_match_group_id ON `match_group_member` (`user_id`, `match_group_id`);
 
 CALL DropIndexIfExists('user', 'idx_ngram_user_name');
 ALTER TABLE `user` ADD FULLTEXT INDEX idx_ngram_user_name (`user_name`) WITH PARSER ngram;
