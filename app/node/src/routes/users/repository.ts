@@ -200,8 +200,8 @@ export const getUsersBySkillName = async (
   skillName: string
 ): Promise<SearchedUser[]> => {
   const [skillIdRows] = await pool.query<RowDataPacket[]>(
-    `SELECT skill_id FROM skill WHERE MATCH (skill_name) AGAINST (? IN BOOLEAN MODE)`,
-    [`*${skillName}*`]
+    `SELECT skill_id FROM skill WHERE skill_name LIKE ?`,
+    [`%${skillName}%`]
   );
   const skillIds: string[] = skillIdRows.map((row) => row.skill_id);
   if (skillIds.length === 0) {
