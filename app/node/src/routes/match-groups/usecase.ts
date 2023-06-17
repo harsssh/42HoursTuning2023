@@ -39,10 +39,11 @@ export const getAllCandidates = async (
   let sqlQuery = `SELECT * FROM user 
   JOIN skill_member ON user.user_id = skill_member.user_id
   JOIN skill ON skill_member.skill_id = skill.skill_id
-  JOIN department_role_member ON department_role_member.user_id = user.user_id`;
+  JOIN department_role_member ON department_role_member.user_id = user.user_id
+  JOIN department ON department.department_id = department_role_member.department_id`;
 
   // An array to hold the parameters of the SQL query
-  let sqlParams = [];
+  const sqlParams = [];
 
   // 範囲を制限したい
   // Adding the filters to the SQL query
@@ -52,7 +53,7 @@ export const getAllCandidates = async (
     skillFilter.length > 0
   ) {
     sqlQuery += " WHERE ";
-    let conditions = [];
+    const conditions = [];
 
     if (departmentFilter !== "none") {
       conditions.push("department_name = ?");
@@ -84,7 +85,7 @@ export const createMatchGroup = async (
   timeout?: number
 ): Promise<MatchGroupDetail | undefined> => {
   const owner = await getUserForFilter(matchGroupConfig.ownerId);
-  let members: UserForFilter[] = [owner];
+  const members: UserForFilter[] = [owner];
   const startTime = Date.now();
 
   // Get all candidates who pass the filter
