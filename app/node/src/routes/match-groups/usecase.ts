@@ -24,6 +24,81 @@ export const checkSkillsRegistered = async (
   return;
 };
 
+// getUserMatchFilter
+export const getUserMatchFilter = async (): Promise<UserForFilter[]> => {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT user_id FROM user WHERE MATCH (goal) AGAINST (? IN BOOLEAN MODE)`,
+    [`*${goal}*`]
+  );
+  const userIds: string[] = rows.map((row) => row.user_id);
+
+  return getUsersByUserIds(userIds);
+};
+
+export const getAllCandidates = async (
+  matchGroupConfig: MatchGroupConfig
+): Promise<UserForFilter[]> => {
+  const owner = await getUserForFilter(matchGroupConfig.ownerId);
+  let candidates: UserForFilter[] = [owner];
+  const startTime = Date.now();
+  while (candidates.length < matchGroupConfig.numOfMembers) {
+    // デフォルトは50秒でタイムアウト
+    if (Date.now() - startTime > 50000) {
+      console.error("not all candidates found before timeout");
+      return [];
+    }
+    // TODO: ここでユーザーを取得する処理を書く
+    const candidates = await getUserMatchFilter();
+
+    if (
+      matchGroupConfig.departmentFilter !== "none" &&
+      !isPassedDepartmentFilter(
+        matchGroupConfig.departmentFilter,
+        owner.departmentName,
+        candidate.departmentName
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed department filter`);
+      continue;
+    } else if (
+      matchGroupConfig.officeFilter !== "none" &&
+      !isPassedOfficeFilter(
+        matchGroupConfig.officeFilter,
+        owner.officeName,
+        candidate.officeName
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed office filter`);
+      continue;
+    } else if (
+      matchGroupConfig.skillFilter.length > 0 &&
+      !matchGroupConfig.skillFilter.some((skill) =>
+        candidate.skillNames.includes(skill)
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed skill filter`);
+      continue;
+    } else if (
+      matchGroupConfig.neverMatchedFilter &&
+      !(await isPassedMatchFilter(matchGroupConfig.ownerId, candidate.userId))
+    ) {
+      console.log(`${candidate.userId} is not passed never matched filter`);
+      continue;
+    } else if (
+      candidates.some((candidate) => candidate.userId === candidate.userId)
+    ) {
+      console.log(`${candidate.userId} is already added to candidates`);
+      continue;
+    }
+    candidates = candidates.concat(candidate);
+    console.log(`${candidate.userId} is added to candidates`);
+  }
+
+  return candidates;
+};
+
+
+
 export const createMatchGroup = async (
   matchGroupConfig: MatchGroupConfig,
   timeout?: number
