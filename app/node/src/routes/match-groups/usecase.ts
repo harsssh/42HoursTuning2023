@@ -108,6 +108,9 @@ export const createMatchGroup = async (
     // Remove candidate from the candidates list
     candidates.splice(candidateIndex, 1);
   }
+  if (members.length < matchGroupConfig.numOfMembers) {
+    return undefined; 
+  }
 
   const matchGroupId = uuidv4();
   await insertMatchGroup({
