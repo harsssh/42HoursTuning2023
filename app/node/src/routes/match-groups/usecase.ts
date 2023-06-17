@@ -90,6 +90,10 @@ export const createMatchGroup = async (
 
   // Get all candidates who pass the filter
   const candidates = await getAllCandidates(matchGroupConfig, owner.departmentName, owner.officeName);
+  
+  if (members.length < matchGroupConfig.numOfMembers) {
+    return undefined; 
+  }
 
   // while (members.length < matchGroupConfig.groupCount) {
   while (members.length < matchGroupConfig.numOfMembers) {
@@ -107,9 +111,6 @@ export const createMatchGroup = async (
 
     // Remove candidate from the candidates list
     candidates.splice(candidateIndex, 1);
-  }
-  if (members.length < matchGroupConfig.numOfMembers) {
-    return undefined; 
   }
 
   const matchGroupId = uuidv4();
