@@ -48,15 +48,24 @@ export const getAllCandidates = async (
     let conditions = [];
 
     if (departmentFilter !== "none") {
-      conditions.push("department_id = ?");
+      if (departmentFilter === "onlyMyDepartment") {
+        conditions.push("department_name = ?");
+      }
+      else {
+        conditions.push("department_name != ?");
+      }
       sqlParams.push(departmentFilter);
     }
     
     if (officeFilter !== "none") {
-      conditions.push("office_id = ?");
+      if (officeFilter === "onlyMyOffice") {
+        conditions.push("office_name = ?");
+      }
+      else {
+        conditions.push("office_name != ?");
+      }
       sqlParams.push(officeFilter);
     }
-    
     if (skillFilter.length > 0) {
       // This assumes that the skillFilter is an array of skill IDs
       conditions.push(`skill_name IN (?)`);
