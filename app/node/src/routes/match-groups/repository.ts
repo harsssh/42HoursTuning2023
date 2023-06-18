@@ -115,29 +115,35 @@ export const getMatchGroupsByMatchGroupIds = async (
     matchGroupIds,
   ]);
 
-  const matchGroups: MatchGroup[] = [];
-  for (const matchGroupRow of matchGroupRows) {
-    const [matchGroupMemberIdRows] = await pool.query<RowDataPacket[]>(
-      "SELECT user_id FROM match_group_member WHERE match_group_id = ?",
-      [matchGroupRow.match_group_id]
-    );
-    const matchGroupMemberIds: string[] = matchGroupMemberIdRows.map(
-      (row) => row.user_id
-    );
+  const [matchGroupMemberIdRows] = await pool.query<RowDataPacket[]>(
+    "SELECT user_id, match_group_id FROM match_group_member WHERE match_group_id IN (?)",
+    [matchGroupIds]
+  );
 
-    const searchedUsers = await getUsersByUserIds(matchGroupMemberIds);
+  const memberIdsByGroupId = matchGroupMemberIdRows.reduce(
+    (acc: { [key: string]: string[] }, row) => {
+      if (!acc[row.match_group_id]) acc[row.match_group_id] = [];
+      acc[row.match_group_id].push(row.user_id);
+      return acc;
+    },
+    {}
+  );
+
+  const userIds: string[] = Object.values(memberIdsByGroupId).flat();
+  const searchedUsers = await getUsersByUserIds(userIds);
+
+  const matchGroups: MatchGroup[] = matchGroupRows.map((matchGroupRow) => {
     // SearchedUserからUser型に変換
-    matchGroupRow.members = searchedUsers.map((searchedUser) => {
-      const { kana: _kana, entryDate: _entryDate, ...rest } = searchedUser;
-      return rest;
-    });
+    matchGroupRow.members = memberIdsByGroupId[
+      matchGroupRow.match_group_id
+    ].map((userId) => searchedUsers.find((user) => user.userId === userId));
 
     // descriptionを除外してMatchGroupオブジェクトを作成
     const { description: _description, ...matchGroup } =
       convertToMatchGroupDetail(matchGroupRow);
 
-    matchGroups.push(matchGroup);
-  }
+    return matchGroup;
+  });
 
   return matchGroups;
 };
