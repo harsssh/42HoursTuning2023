@@ -228,42 +228,72 @@ export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
 };
 
 export const getUserForFilter = async (
-  userId?: string
+    userId?: string
 ): Promise<UserForFilter> => {
   let userRows: RowDataPacket[];
+
   if (!userId) {
     [userRows] = await pool.query<RowDataPacket[]>(
-      "SELECT user_id, user_name, office_id, user_icon_id FROM user ORDER BY RAND() LIMIT 1"
+        `
+      SELECT 
+        u.user_id, u.user_name, u.office_id, u.user_icon_id,
+        o.office_name, f.file_name, 
+        d.department_name,
+        GROUP_CONCAT(s.skill_name) as skill_names
+      FROM 
+        user u 
+      LEFT JOIN 
+        office o ON u.office_id = o.office_id
+      LEFT JOIN 
+        file f ON u.user_icon_id = f.file_id
+      LEFT JOIN 
+        department_role_member drm ON u.user_id = drm.user_id AND drm.belong = true
+      LEFT JOIN 
+        department d ON drm.department_id = d.department_id
+      LEFT JOIN 
+        skill_member sm ON u.user_id = sm.user_id
+      LEFT JOIN 
+        skill s ON sm.skill_id = s.skill_id
+      GROUP BY 
+        u.user_id, u.user_name, u.office_id, u.user_icon_id, o.office_name, f.file_name, d.department_name
+      ORDER BY 
+        RAND() LIMIT 1
+      `
     );
   } else {
     [userRows] = await pool.query<RowDataPacket[]>(
-      "SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id = ?",
-      [userId]
+        `
+      SELECT 
+        u.user_id, u.user_name, u.office_id, u.user_icon_id,
+        o.office_name, f.file_name, 
+        d.department_name,
+        GROUP_CONCAT(s.skill_name) as skill_names
+      FROM 
+        user u 
+      LEFT JOIN 
+        office o ON u.office_id = o.office_id
+      LEFT JOIN 
+        file f ON u.user_icon_id = f.file_id
+      LEFT JOIN 
+        department_role_member drm ON u.user_id = drm.user_id AND drm.belong = true
+      LEFT JOIN 
+        department d ON drm.department_id = d.department_id
+      LEFT JOIN 
+        skill_member sm ON u.user_id = sm.user_id
+      LEFT JOIN 
+        skill s ON sm.skill_id = s.skill_id
+      WHERE 
+        u.user_id = ?
+      GROUP BY 
+        u.user_id, u.user_name, u.office_id, u.user_icon_id, o.office_name, f.file_name, d.department_name
+      `,
+        [userId]
     );
   }
+
   const user = userRows[0];
-
-  const [officeNameRow] = await pool.query<RowDataPacket[]>(
-    `SELECT office_name FROM office WHERE office_id = ?`,
-    [user.office_id]
-  );
-  const [fileNameRow] = await pool.query<RowDataPacket[]>(
-    `SELECT file_name FROM file WHERE file_id = ?`,
-    [user.user_icon_id]
-  );
-  const [departmentNameRow] = await pool.query<RowDataPacket[]>(
-    `SELECT department_name FROM department WHERE department_id = (SELECT department_id FROM department_role_member WHERE user_id = ? AND belong = true)`,
-    [user.user_id]
-  );
-  const [skillNameRows] = await pool.query<RowDataPacket[]>(
-    `SELECT skill_name FROM skill WHERE skill_id IN (SELECT skill_id FROM skill_member WHERE user_id = ?)`,
-    [user.user_id]
-  );
-
-  user.office_name = officeNameRow[0].office_name;
-  user.file_name = fileNameRow[0].file_name;
-  user.department_name = departmentNameRow[0].department_name;
-  user.skill_names = skillNameRows.map((row) => row.skill_name);
+  user.skill_names = user.skill_names ? user.skill_names.split(',') : [];
 
   return convertToUserForFilter(user);
-};
+}
+
