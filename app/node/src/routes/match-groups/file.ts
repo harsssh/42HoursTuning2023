@@ -24,42 +24,6 @@ export const checkSkillsRegistered = async (
   return;
 };
 
-const isCandidateFitForGroup = async (
-  owner: UserForFilter, 
-  candidate: UserForFilter, 
-  matchGroupConfig: MatchGroupConfig
-): Promise<boolean> => {
-  // Return false if candidate is owner
-  if (candidate.userId === owner.userId) return false;
-
-  // Check department filter
-  if (matchGroupConfig.departmentFilter !== "none" &&
-      !isPassedDepartmentFilter(matchGroupConfig.departmentFilter, owner.departmentName, candidate.departmentName)) {
-    return false;
-  }
-
-  // Check office filter
-  if (matchGroupConfig.officeFilter !== "none" &&
-      !isPassedOfficeFilter(matchGroupConfig.officeFilter, owner.officeName, candidate.officeName)) {
-    return false;
-  }
-
-  // Check skill filter
-  if (matchGroupConfig.skillFilter.length > 0 &&
-      !matchGroupConfig.skillFilter.some((skill: string) => candidate.skillNames.includes(skill))) {
-    return false;
-  }
-
-  // Check never matched filter
-  if (matchGroupConfig.neverMatchedFilter &&
-      !(await isPassedMatchFilter(matchGroupConfig.ownerId, candidate.userId))) {
-    return false;
-  }
-
-  // If candidate has passed all filters, return true
-  return true;
-};
-
 export const createMatchGroup = async (
   matchGroupConfig: MatchGroupConfig,
   timeout?: number
@@ -67,7 +31,6 @@ export const createMatchGroup = async (
   const owner = await getUserForFilter(matchGroupConfig.ownerId);
   let members: UserForFilter[] = [owner];
   const startTime = Date.now();
-  
   while (members.length < matchGroupConfig.numOfMembers) {
     // デフォルトは50秒でタイムアウト
     if (Date.now() - startTime > (!timeout ? 50000 : timeout)) {
@@ -75,13 +38,46 @@ export const createMatchGroup = async (
       return;
     }
     const candidate = await getUserForFilter();
-
-    if (await isCandidateFitForGroup(owner, candidate, matchGroupConfig)) {
-      members = members.concat(candidate);
-      console.log(`${candidate.userId} is added to members`);
-    } else {
-      console.log(`${candidate.userId} is not passed filter(s)`);
+    if (
+      matchGroupConfig.departmentFilter !== "none" &&
+      !isPassedDepartmentFilter(
+        matchGroupConfig.departmentFilter,
+        owner.departmentName,
+        candidate.departmentName
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed department filter`);
+      continue;
+    } else if (
+      matchGroupConfig.officeFilter !== "none" &&
+      !isPassedOfficeFilter(
+        matchGroupConfig.officeFilter,
+        owner.officeName,
+        candidate.officeName
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed office filter`);
+      continue;
+    } else if (
+      matchGroupConfig.skillFilter.length > 0 &&
+      !matchGroupConfig.skillFilter.some((skill) =>
+        candidate.skillNames.includes(skill)
+      )
+    ) {
+      console.log(`${candidate.userId} is not passed skill filter`);
+      continue;
+    } else if (
+      matchGroupConfig.neverMatchedFilter &&
+      !(await isPassedMatchFilter(matchGroupConfig.ownerId, candidate.userId))
+    ) {
+      console.log(`${candidate.userId} is not passed never matched filter`);
+      continue;
+    } else if (members.some((member) => member.userId === candidate.userId)) {
+      console.log(`${candidate.userId} is already added to members`);
+      continue;
     }
+    members = members.concat(candidate);
+    console.log(`${candidate.userId} is added to members`);
   }
 
   const matchGroupId = uuidv4();
