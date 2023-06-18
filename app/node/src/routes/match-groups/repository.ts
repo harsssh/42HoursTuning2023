@@ -132,11 +132,18 @@ export const getMatchGroupsByMatchGroupIds = async (
   const userIds: string[] = Object.values(memberIdsByGroupId).flat();
   const searchedUsers = await getUsersByUserIds(userIds);
 
-  const matchGroups: MatchGroup[] = matchGroupRows.map((matchGroupRow) => {
+  return matchGroupRows.map((matchGroupRow) => {
     // SearchedUserからUser型に変換
     matchGroupRow.members = memberIdsByGroupId[
       matchGroupRow.match_group_id
-    ].map((userId) => searchedUsers.find((user) => user.userId === userId));
+    ].map((userId) => {
+      const user = searchedUsers.find((user) => user.userId === userId);
+      if (!user) {
+        throw new Error(`user not found. userId: ${userId}`);
+      }
+      const { kana: _kana, entryDate: _entryDate, ...rest } = user;
+      return rest;
+    });
 
     // descriptionを除外してMatchGroupオブジェクトを作成
     const { description: _description, ...matchGroup } =
@@ -144,6 +151,4 @@ export const getMatchGroupsByMatchGroupIds = async (
 
     return matchGroup;
   });
-
-  return matchGroups;
 };
